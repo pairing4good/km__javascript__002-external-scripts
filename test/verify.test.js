@@ -38,27 +38,28 @@ afterEach(async () => {
 });
 
 describe('the javascript in the script element', () => {
-  it('should contain a single line comment that comments out line 14', async () => {
-    const matches = await page.$eval('body script', (script) => {
-      return script.innerHTML.match(/\/\/.*total = total - 2;/g).length
-    });
+  it('should be cut and moved to the index.js file', async () => {
+    const innerHtml = await page.$eval('body script', (script) => {
+      return script.innerHTML.trim();
+    })
     
-    expect(matches).toBe(1);
+    expect(innerHtml).toBe('');
   });
-
-  it('should contain a multi-line comment that comments out lines 16, 17 and 18', async () => {
-    const matches = await page.$eval('body script', (script) => {
-      return script.innerHTML.match(/\/\*[\s\S][^\*\/]*total = total - 4;[\s\S][^\*\/]*total = total - 5;[\s\S][^\*\/]*total = total - 6;[\s\S]*\*\//g).length
-    });  
-      
-    expect(matches).toBe(1);
+  
+  it('should point to the index.js file', async () => {
+    const src = await page.$eval('body script', (script) => {
+      return script.getAttribute('src');
+    })
+    
+    expect(src).toBe("index.js")
   });
-
-  it('should set the result element to 39', async () => {
-    const result = await page.$eval('#result', (result) => {
+  
+  it('should set the result element to 50', async () => {
+    const innerHtml = await page.$eval('#result', (result) => {
       return result.innerHTML;
-    });
+    })
       
-    expect(result).toBe('39');
+    expect(innerHtml).toBe('50');
   });
 });
+
